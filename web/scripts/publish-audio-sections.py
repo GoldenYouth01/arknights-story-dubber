@@ -59,6 +59,17 @@ def push(cwd):
     raise RuntimeError('Git push failed after five attempts')
 
 
+def wait_for_page_build_slot(shard):
+    # Branch-based Pages sites have a soft limit of ten builds per hour.
+    last = run(['git', 'log', '-1', '--format=%ct%n%s'], shard).stdout.splitlines()
+    if len(last) < 2 or not last[1].startswith('Publish Kaltsit audio '):
+        return
+    delay = 370 - (time.time() - int(last[0]))
+    if delay > 0:
+        say('Waiting', round(delay), 'seconds for the next Pages build slot')
+        time.sleep(delay)
+
+
 def key_for(group_id, chapter):
     # The first published story used bare slugs. New stories use full IDs so
     # chapter names from other stories can never collide.
@@ -155,6 +166,7 @@ def main(group_id, shard_name, once):
         run(['git', 'add', '--', 'audio/' + slug], shard)
         run(['git', 'diff', '--cached', '--check', '--', 'audio/' + slug], shard)
         if run(['git', 'diff', '--cached', '--quiet'], shard, check=False).returncode:
+            wait_for_page_build_slot(shard)
             run(['git', 'commit', '--only', '-m',
                  f'Publish Kaltsit audio {group_id} section {position + 1}/{len(chapters)}: {slug}',
                  '--', 'audio/' + slug], shard)
@@ -172,7 +184,7 @@ def main(group_id, shard_name, once):
             push(ROOT)
         if once:
             break
-    say('DONE', group_id, len(chapters), 'sections')
+    say('DONE', group_id, len(chapters) if not once else len(released) + 1, '/', len(chapters), 'sections')
 
 
 if __name__ == '__main__':
