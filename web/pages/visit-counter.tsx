@@ -48,6 +48,6 @@ export default function VisitCounter(){
   },[]);
   return <div className="visit-counter" role="status" title="旧统计服务故障期间的访问无法补算，当前数字从最后一次确认的 7 次记录接续。">
     <span className="eyebrow">TERRA VISITORS</span>
-    <div><b>{visitors===null?(unavailable?"统计服务暂时无响应，正在重试…":"正在统计到访博士…"):<>{fresh?"累计至少":"上次记录至少"} <strong>{visitors.toLocaleString("zh-CN")}</strong> 人次</>}</b></div>
+    <div><b>{visitors===null?(unavailable?"统计服务暂时无响应，正在重试…":"正在统计到访博士…"):<>{!fresh&&"上次记录："}累计<strong>{visitors.toLocaleString("zh-CN")}</strong>博士到访</>}</b></div>
   </div>;
 }
