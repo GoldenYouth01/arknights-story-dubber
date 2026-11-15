@@ -11,7 +11,7 @@ export function loadVisitorCount(){
       if(!response.ok)throw Error("Visitor service unavailable");
       return response.json();
     }).then(data=>{
-      const value=Number((data as Record<string,unknown>).busuanzi_page_uv);
+      const value=Number((data as Record<string,unknown>).busuanzi_page_pv);
       if(!Number.isSafeInteger(value)||value<0)throw Error("Invalid visitor count");
       return value;
     });
@@ -29,7 +29,7 @@ export default function VisitCounter(){
   },[]);
   return <div className="visit-counter" role="status">
     <span className="eyebrow">TERRA VISITORS</span>
-    <div><b>{visitors===null?(unavailable?"访客统计暂不可用":"正在统计到访博士…"):<>已有 <strong>{visitors.toLocaleString("zh-CN")}</strong> 位博士到访</>}</b></div>
-    <small>不蒜子提供 · 自 2026-11-15 起统计 · 按网络地址估算</small>
+    <div><b>{visitors===null?(unavailable?"访问统计暂不可用":"正在统计到访博士…"):<>累计访问 <strong>{visitors.toLocaleString("zh-CN")}</strong> 人次</>}</b></div>
+    <small>不蒜子提供 · 自 2026-11-15 起统计</small>
   </div>;
 }
