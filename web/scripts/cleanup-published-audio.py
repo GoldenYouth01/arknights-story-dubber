@@ -2,14 +2,22 @@
 
 import argparse
 import json
+import os
 import re
 import shutil
+import stat
 import time
 from pathlib import Path
 
 
 WEB = Path(__file__).resolve().parents[1]
 WORK = (WEB / "work").resolve()
+
+
+def retry_readonly(remove, path, _error):
+    """Git marks some Windows checkout objects read-only."""
+    os.chmod(path, stat.S_IWRITE)
+    remove(path)
 
 
 def main(group_id: str, shard_name: str) -> None:
@@ -47,7 +55,7 @@ def main(group_id: str, shard_name: str) -> None:
         raise RuntimeError("Audio shard URL does not match the published configuration")
 
     if shard.is_dir():
-        shutil.rmtree(shard)
+        shutil.rmtree(shard, onerror=retry_readonly)
     if lines_file.is_file():
         lines_file.unlink()
     print(f"Published {len(expected)} sections; local shard and generated line list removed", flush=True)
