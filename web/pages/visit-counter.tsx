@@ -30,6 +30,5 @@ export default function VisitCounter(){
   return <div className="visit-counter" role="status">
     <span className="eyebrow">TERRA VISITORS</span>
     <div><b>{visitors===null?(unavailable?"访问统计暂不可用":"正在统计到访博士…"):<>累计访问 <strong>{visitors.toLocaleString("zh-CN")}</strong> 人次</>}</b></div>
-    <small>不蒜子提供 · 自 2026-11-15 起统计</small>
   </div>;
 }
