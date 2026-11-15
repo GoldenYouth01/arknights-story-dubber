@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {parseStory,nextIndex,resolveScene,attrs,imageUrl,catalogFrom,timelineFrom,nextChapter,previousStep} from "../lib/story.mjs";
 import {DialogueAudio,resolveVoice} from "../lib/audio.mjs";
 test("original script names, nickname and CG directory",()=>{
@@ -67,6 +68,7 @@ test("volume and speed changes preserve the active sentence and playback positio
 test("selected preset overrides every speaker and narration",()=>{const personal={id:"kaltsit",version:"published",speaker:"凯尔希"};const voices=[{id:"amiya",speaker:"阿米娅"},{id:"__npc",kind:"fallback"},{id:"__narrator",kind:"narrator"}];for(const speaker of ["阿米娅","士兵","旁白",""])assert.equal(resolveVoice(voices,{speaker},personal),personal);assert.equal(resolveVoice(voices,{speaker:"阿米娅"},null).id,"amiya");});
 
 test('new portrait expressions and action-only slots remain visible',()=>{const {steps}=parseStory('[charslot(slot="r",name="avg_180_amgoat_1#3$1")]\n[name="甲"] A\n[charslot(slot="r",posto="10,20",duration=1)]\n[name="甲"] B');const scene=resolveScene(steps,1);assert.equal(scene.actors.length,1);assert.equal(scene.actors[0].slot,'r');assert.match(scene.actors[0].url,/%233%241/);assert.deepEqual(scene.actors[0].offset,[10,20]);});
+test('full left and right slot names keep both portraits in Xiangjianhuan',()=>{const raw=fs.readFileSync(new URL('../pages/public/story/act40side/level_act40side_st01.txt',import.meta.url),'utf8');const {steps}=parseStory(raw);const scene=resolveScene(steps,31);assert.equal(steps[31].speaker,'朔');assert.deepEqual(scene.actors.map(actor=>actor.slot),['l','m','r']);assert.match(scene.actors[0].key,/avg_2024_chyue_1/);assert.equal(scene.actors[2].opacity,0);});
 test('music state respects branches, volume and stop',()=>{const {steps}=parseStory('[PlayMusic(intro="$a_intro",key="$a_loop",volume=0.6)]\n[name="甲"] A\n[MusicVolume(volume=0.3)]\n[name="甲"] B\n[StopMusic]\n[name="甲"] C');assert.equal(resolveScene(steps,0).music.intro,'$a_intro');assert.equal(resolveScene(steps,1).musicVolume,.3);assert.equal(resolveScene(steps,2).music,null);});
 
 test('rapid skipping submits only the final sentence after debounce',async()=>{let calls=[];const player=new DialogueAudio({fetcher:async(u,o)=>{calls.push(JSON.parse(o.body).text);return new Response(new Blob(['audio']));},makeAudio:()=>({play:async()=>{},pause(){},removeAttribute(){},load(){}})});const pending=[];for(let i=0;i<20;i++)pending.push(player.play({text:String(i)},{id:'v',version:'1'}));await Promise.all(pending);assert.deepEqual(calls,['19']);player.dispose();});

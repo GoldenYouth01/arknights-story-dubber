@@ -6,6 +6,7 @@ export function attrs(source=""){
  while((m=re.exec(source)))out[m[1].toLowerCase()]=(m[2]??m[3]??m[4]).trim();
  return out;
 }
+function normalizeSlot(slot){return {left:"l",right:"r",middle:"m",center:"m"}[slot]||slot;}
 export function imageUrl(kind,name){
  if(!name || !/^[a-zA-Z0-9_#$-]+$/.test(name))return null;
  if(kind==="character")return globalThis.__terraPortraitUrl?.(name) || "/api/media?kind=portrait&name="+encodeURIComponent(name);
@@ -30,9 +31,9 @@ export function parseStory(raw,id="chapter"){
    }else if(name==="charslot"){
     if(!a.name && !a.focus)state={...state,actors:[]};
     else{
-     const actors=[...state.actors]; const slot={l:0,m:0,r:1}[a.slot]??0;
+     const actors=[...state.actors]; const slot={l:0,m:0,r:1}[normalizeSlot(a.slot)]??0;
      if(a.name)actors[slot]={key:a.name,url:imageUrl("character",a.name)};
-     state={...state,actors:actors.filter(Boolean),focus:a.focus==="r"?1:0};
+     state={...state,actors:actors.filter(Boolean),focus:normalizeSlot(a.focus)==="r"?1:0};
     }
    }else if(name==="decision"){
     const labels=(a.options||"").split(";"),values=(a.values||"").split(";");
@@ -84,13 +85,15 @@ export function resolveScene(steps,index,decisions={}){
    if(name==="charslot"){
     if(!Object.keys(a).length)slots.clear();
     else if(a.slot){
-     const previous=slots.get(a.slot);
-     if(Object.hasOwn(a,'name')){if(a.name)slots.set(a.slot,{...previous,key:a.name,url:imageUrl('character',a.name),slot:a.slot});else slots.delete(a.slot);}
-     const actor=slots.get(a.slot);
+     const slot=normalizeSlot(a.slot);
+     const previous=slots.get(slot);
+     if(Object.hasOwn(a,'name')){if(a.name)slots.set(slot,{...previous,key:a.name,url:imageUrl('character',a.name),slot});else slots.delete(slot);}
+     const actor=slots.get(slot);
      if(actor){if(a.ato!==undefined)actor.opacity=Number(a.ato);if(a.scale!==undefined)actor.scale=Number(a.scale);if(a.posto)actor.offset=a.posto.split(',').map(Number);}
     }
     const actors=['l','m','r'].map(slot=>slots.get(slot)).filter(Boolean);
-    state={...state,actors,focus:a.focus==='all'?-1:a.focus?actors.findIndex(actor=>actor.slot===a.focus):state.focus};
+    const focus=normalizeSlot(a.focus);
+    state={...state,actors,focus:focus==='all'?-1:focus?actors.findIndex(actor=>actor.slot===focus):state.focus};
    }
    if(name==='playmusic')state={...state,music:{key:a.key||a.intro||'',intro:a.intro||null,event:step.id+':'+i},musicVolume:Number(a.volume??1)};
    if(name==='stopmusic')state={...state,music:null};
