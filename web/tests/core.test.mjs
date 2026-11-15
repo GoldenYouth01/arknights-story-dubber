@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import {parseStory,nextIndex,resolveScene,attrs,imageUrl,catalogFrom,timelineFrom,nextChapter,previousStep} from "../lib/story.mjs";
+import {portraitUrl} from "../lib/portrait.mjs";
 import {DialogueAudio,resolveVoice} from "../lib/audio.mjs";
 test("original script names, nickname and CG directory",()=>{
  const {steps}=parseStory('[Image(image="bg_0_am")]\n[name="阿米娅"] Dr.{@nickname}，你好。');
@@ -69,6 +70,15 @@ test("selected preset overrides every speaker and narration",()=>{const personal
 
 test('new portrait expressions and action-only slots remain visible',()=>{const {steps}=parseStory('[charslot(slot="r",name="avg_180_amgoat_1#3$1")]\n[name="甲"] A\n[charslot(slot="r",posto="10,20",duration=1)]\n[name="甲"] B');const scene=resolveScene(steps,1);assert.equal(scene.actors.length,1);assert.equal(scene.actors[0].slot,'r');assert.match(scene.actors[0].url,/%233%241/);assert.deepEqual(scene.actors[0].offset,[10,20]);});
 test('full left and right slot names keep both portraits in Xiangjianhuan',()=>{const raw=fs.readFileSync(new URL('../pages/public/story/act40side/level_act40side_st01.txt',import.meta.url),'utf8');const {steps}=parseStory(raw);const scene=resolveScene(steps,31);assert.equal(steps[31].speaker,'朔');assert.deepEqual(scene.actors.map(actor=>actor.slot),['l','m','r']);assert.match(scene.actors[0].key,/avg_2024_chyue_1/);assert.equal(scene.actors[2].opacity,0);});
+test('Lone Trail portraits resolve root files and unavailable expressions',()=>{
+ assert.match(portraitUrl('avg_npc_134'),/\/characters\/avg_npc_134\.png$/);
+ assert.match(portraitUrl('avg_npc_279_1#1$1'),/\/characters\/avg_npc_279_1%241\.png$/);
+ assert.match(portraitUrl('char_002_amiya_1#1'),/\/char_002_amiya_1\/char_002_amiya_1\.png$/);
+ assert.match(portraitUrl('npc_10002'),/\/characters\/npc_10002_1\.png$/);
+ const directory=new URL('../pages/public/story/act25side/',import.meta.url);
+ const names=new Set(fs.readdirSync(directory).filter(file=>file.endsWith('.txt')).flatMap(file=>[...fs.readFileSync(new URL(file,directory),'utf8').matchAll(/\[charslot[^\]\n]*?\bname\s*=\s*"([^"]+)"/gi)].map(match=>match[1])));
+ assert.equal([...names].filter(name=>!portraitUrl(name)).length,0);
+});
 test('music state respects branches, volume and stop',()=>{const {steps}=parseStory('[PlayMusic(intro="$a_intro",key="$a_loop",volume=0.6)]\n[name="甲"] A\n[MusicVolume(volume=0.3)]\n[name="甲"] B\n[StopMusic]\n[name="甲"] C');assert.equal(resolveScene(steps,0).music.intro,'$a_intro');assert.equal(resolveScene(steps,1).musicVolume,.3);assert.equal(resolveScene(steps,2).music,null);});
 
 test('rapid skipping submits only the final sentence after debounce',async()=>{let calls=[];const player=new DialogueAudio({fetcher:async(u,o)=>{calls.push(JSON.parse(o.body).text);return new Response(new Blob(['audio']));},makeAudio:()=>({play:async()=>{},pause(){},removeAttribute(){},load(){}})});const pending=[];for(let i=0;i<20;i++)pending.push(player.play({text:String(i)},{id:'v',version:'1'}));await Promise.all(pending);assert.deepEqual(calls,['19']);player.dispose();});
