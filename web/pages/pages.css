@@ -6,3 +6,31 @@
 .story-archive .archive-voiced-badge svg{flex:none}
 .timeline-row .archive-voiced-badge{margin-left:0}
 .theater[data-theme="light"] .story-archive .archive-voiced-badge{background:#cce8c1;border-color:#9fce9b;color:#24503b}
+
+/* Keep archive controls fixed while the chapter list scrolls inside the drawer. */
+.drawer.archive-drawer{display:flex;flex-direction:column;overflow:hidden}
+.archive-drawer .drawer-head{flex:none;margin-bottom:20px}
+.archive-drawer .drawer-player{flex:none}
+.story-archive{display:flex;flex-direction:column;flex:1;min-height:0}
+.story-archive .archive-views{flex:none;margin-bottom:12px}
+.story-archive .search{flex:none}
+.story-archive .archive-categories{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;flex:none;margin:14px 0 16px}
+.story-archive .archive-categories button{min-width:0;justify-content:center;white-space:nowrap;padding:7px 3px;font-size:10px}
+.story-archive .catalog,.story-archive .timeline-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:5px;background:#ffffff04;padding:4px 10px;scrollbar-gutter:stable}
+.story-archive .catalog{margin-top:0}
+.story-archive .archive-timeline{display:flex;flex-direction:column;flex:1;min-height:0}
+.story-archive .timeline-toolbar{flex:none}
+.story-archive .timeline-note{flex:none;margin:9px 0 12px}
+.story-archive .source-note{flex:none;margin:10px 0 0;font-size:9px}
+.story-archive .catalog summary{padding:12px 3px}
+.story-archive .catalog summary small{margin-top:3px}
+.story-archive .chapter-row{gap:9px;padding:8px 7px}
+.story-archive .chapter-row>span{width:43px;font-size:10px}
+.story-archive .chapter-row div{gap:2px;min-width:0}
+.story-archive .chapter-row b{font-size:12px;line-height:1.4}
+.story-archive .chapter-row small{font-size:9px}
+.story-archive .timeline-collection .chapter-row{padding-left:17px}
+.story-archive .timeline-date{margin:15px 0 6px}
+.story-archive .timeline-row{gap:9px;padding:8px 5px}
+.story-archive .timeline-row b{margin:1px 0;line-height:1.4}
+@media(max-width:420px){.story-archive .archive-categories button{font-size:9px;padding:7px 1px}}

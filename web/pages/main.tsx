@@ -7,5 +7,6 @@ import "../app/globals.css";
 import "./pages.css";
 
 setupStaticMedia();
-void loadVisitorCount().catch(()=>{});
+function recordVisit(){void loadVisitorCount().catch(()=>window.setTimeout(recordVisit,60_000));}
+recordVisit();
 createRoot(document.getElementById("root")!).render(<Theater/>);
