@@ -113,13 +113,14 @@ def main(group_id, shard_name, once):
         raise ValueError('Invalid shard name')
     page = f'https://luoul-123.github.io/{shard_name}/'
     sites = json.loads((WEB / 'pages/audio-sites.json').read_text('utf-8'))
-    if sites['prefixes'].get(f'activities/{group_id}/') != page:
-        raise RuntimeError('Audio site mapping does not match this story and shard')
     catalog = json.loads((WEB / 'pages/catalog.json').read_text('utf-8'))
     group = next((item for item in catalog if item['id'] == group_id), None)
     if not group or not group['chapters']:
         raise RuntimeError('Story group missing from catalog')
     chapters = group['chapters']
+    if any((sites['chapters'].get(chapter['id']) or
+            sites['prefixes'].get(f'activities/{group_id}/')) != page for chapter in chapters):
+        raise RuntimeError('Audio site mapping does not match this story and shard')
     lines_name = 'pages-lines.json' if group_id == 'act55side' else f'pages-lines-{group_id}.json'
     lines_file = WEB / 'work' / lines_name
     lines = json.loads(lines_file.read_text('utf-8'))

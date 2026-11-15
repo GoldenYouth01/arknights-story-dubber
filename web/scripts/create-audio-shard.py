@@ -45,12 +45,14 @@ def git(*args, cwd):
 
 
 def main(group_id, repo):
-    if not re.fullmatch(r'act[0-9]+side', group_id) or not re.fullmatch(r'vot-audio-[0-9]{8}', repo):
+    if not re.fullmatch(r'(?:act[0-9]+side|main_[0-9]+)', group_id) or not re.fullmatch(r'vot-audio-[0-9]{8}', repo):
         raise ValueError('Invalid story or shard name')
     catalog = json.loads((WEB / 'pages/catalog.json').read_text('utf-8'))
     group = next((item for item in catalog if item['id'] == group_id), None)
     if not group:
         raise ValueError('Story group missing')
+    label = '主线 0～4 章' if repo == 'vot-audio-20190430' else (
+        f'主线 {group_id.split("_")[-1]} 章·{group["title"]}' if group_id.startswith('main_') else group['title'])
     checkout = WEB / 'work' / repo
     token = credential()
     status, _ = request('GET', f'/repos/{OWNER}/{repo}', token)
@@ -65,13 +67,13 @@ def main(group_id, repo):
         if status != 404:
             raise RuntimeError('Remote audio shard repository already exists')
         request('POST', '/user/repos', token, {'name': repo, 'private': False,
-                                             'description': f'Voice of Terra · {group["title"]} 凯尔希配音分站',
+                                             'description': f'Voice of Terra · {label} 凯尔希配音分站',
                                              'has_issues': False, 'has_wiki': False})
         checkout.mkdir(parents=True)
         (checkout / '.nojekyll').touch()
         (checkout / 'README.md').write_text(
-            f'# Voice of Terra · {group["title"]}配音分站\n\n'
-            f'本仓库存放《{group["title"]}》的凯尔希音色 MP3，供[主网页]'
+            f'# Voice of Terra · {label}配音分站\n\n'
+            f'本仓库存放{label}的凯尔希音色 MP3，供[主网页]'
             f'(https://luoul-123.github.io/voice-of-terra-for-arknights/)读取。\n'
             f'音频为非官方同人合成内容；剧情和角色版权归原权利人所有。\n', encoding='utf-8')
         git('init', '-b', 'main', cwd=checkout)

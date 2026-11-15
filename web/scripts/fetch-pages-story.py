@@ -33,7 +33,8 @@ def main(group_id):
     group = next((item for item in catalog if item['id'] == group_id), None)
     if not group or not group['chapters']:
         raise ValueError('Story group missing: ' + group_id)
-    if any(not chapter['id'].startswith(f'activities/{group_id}/level_') for chapter in group['chapters']):
+    source_prefix = f'activities/{group_id}/' if group['category'] == 'side' else 'obt/'
+    if any(not chapter['id'].startswith(source_prefix) for chapter in group['chapters']):
         raise ValueError('Unexpected chapter path')
     target = WEB / 'pages/public/story' / group_id
     target.mkdir(parents=True, exist_ok=True)

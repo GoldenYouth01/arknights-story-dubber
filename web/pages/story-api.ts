@@ -2,13 +2,15 @@ import catalog from "./catalog.json";
 import {parseStory} from "../lib/story.mjs";
 
 export const CATALOG=catalog;
+const LOCAL_MAIN_CHAPTERS=new Map(catalog.filter(group=>/^main_[0-7]$/.test(group.id))
+  .flatMap(group=>group.chapters.map(chapter=>[chapter.id,group.id] as const)));
 const SOURCES=[
   "https://cdn.jsdelivr.net/gh/ArknightsAssets/ArknightsGamedata@master/cn/gamedata/story/",
   "https://raw.githubusercontent.com/ArknightsAssets/ArknightsGamedata/master/cn/gamedata/story/",
 ];
 export async function loadStory(id:string){
   if(!/^[a-zA-Z0-9_/-]{1,180}$/.test(id)||id.includes("..")||id.startsWith("/"))throw Error("无效章节");
-  const localGroup=/^activities\/(act55side|act40side|act25side)\//.exec(id)?.[1];
+  const localGroup=/^activities\/(act55side|act40side|act25side)\//.exec(id)?.[1]??LOCAL_MAIN_CHAPTERS.get(id);
   if(localGroup){
     const source=localGroup==='act55side'?'sample/':`story/${localGroup}/`;
     const response=await fetch(import.meta.env.BASE_URL+source+id.split('/').pop()+'.txt');

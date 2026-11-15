@@ -27,10 +27,18 @@ def main():
     args = parser.parse_args()
     if not re.fullmatch(r'[a-z0-9_]+', args.group):
         raise ValueError('Invalid story group id: ' + args.group)
+    catalog = json.loads((ROOT / 'pages/catalog.json').read_text('utf-8'))
+    group = next((item for item in catalog if item['id'] == args.group), None)
+    if group is None:
+        raise ValueError('Unknown story group: ' + args.group)
+    chapter_ids = {chapter['id'] for chapter in group['chapters']}
     lines_file = args.lines_file or ROOT / 'work' / ('pages-lines.json' if args.group == 'act55side' else f'pages-lines-{args.group}.json')
     lines = json.loads(lines_file.read_text('utf-8'))
     if args.section:
-        lines = [line for line in lines if line['id'].startswith(f'activities/{args.group}/{args.section}:')]
+        selected = [chapter_id for chapter_id in chapter_ids if chapter_id.split('/')[-1] == args.section]
+        if len(selected) != 1:
+            raise ValueError('Unknown or ambiguous story section: ' + args.section)
+        lines = [line for line in lines if line['id'].startswith(selected[0] + ':')]
         if not lines:
             raise ValueError('Unknown story section: ' + args.section)
     voice = next(c for c in server.read_store().values() if c.get('speaker') == '凯尔希' and c.get('published'))
@@ -41,10 +49,10 @@ def main():
     started = time.monotonic()
     try:
         for number, line in enumerate(lines, 1):
-            match = re.fullmatch(r'activities/' + re.escape(args.group) + r'/(level_[a-z0-9_]+):(\d+)', line['id'])
-            if not match:
+            match = re.fullmatch(r'([^:]+):(\d+)', line['id'])
+            if not match or match.group(1) not in chapter_ids:
                 raise ValueError('Unexpected step id: ' + line['id'])
-            section, index = match.groups()
+            section, index = match.group(1).split('/')[-1], match.group(2)
             output = target_root / section / (index + '.mp3')
             if output.is_file() and output.stat().st_size > 1000:
                 completed += 1
