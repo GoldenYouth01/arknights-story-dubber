@@ -29,7 +29,7 @@ export function parseStory(raw,id="chapter"){
    else if(name==="character"){
     state={...state,actors:[a.name,a.name2].filter(Boolean).map(x=>({key:x,url:imageUrl("character",x)})),focus:Number(a.focus||1)-1};
    }else if(name==="charslot"){
-    if(!a.name && !a.focus)state={...state,actors:[]};
+    if(!a.slot)state={...state,actors:[]};
     else{
      const actors=[...state.actors]; const slot={l:0,m:0,r:1}[normalizeSlot(a.slot)]??0;
      if(a.name)actors[slot]={key:a.name,url:imageUrl("character",a.name)};
@@ -83,7 +83,7 @@ export function resolveScene(steps,index,decisions={}){
     state={...state,actors:[...slots.values()],focus:Number(a.focus||1)-1};
    }
    if(name==="charslot"){
-    if(!Object.keys(a).length)slots.clear();
+    if(!a.slot)slots.clear();
     else if(a.slot){
      const slot=normalizeSlot(a.slot);
      const previous=slots.get(slot);
