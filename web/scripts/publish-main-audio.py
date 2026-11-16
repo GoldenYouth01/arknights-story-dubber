@@ -1,4 +1,5 @@
 """Resume main story audio publication in release order, cleaning finished shards."""
+import argparse
 import json
 import os
 import shutil
@@ -54,7 +55,7 @@ def clean_shard(shard_name):
     print(f'Local audio checkout removed after publication: {shard_name}', flush=True)
 
 
-def main():
+def main(through):
     for group_id, shard_name in SHARDS.items():
         if not completed(group_id):
             shard = WORK / shard_name
@@ -71,8 +72,12 @@ def main():
             lines_file.unlink(missing_ok=True)
         if group_id in ('main_4', 'main_5', 'main_6', 'main_7'):
             clean_shard(shard_name)
-    print('DONE main_0-main_7', flush=True)
+        if group_id == through:
+            break
+    print(f'DONE main_0-{through}', flush=True)
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--through', choices=SHARDS, default='main_7')
+    main(parser.parse_args().through)
