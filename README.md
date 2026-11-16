@@ -19,7 +19,7 @@ Voice of Terra 泰拉之声是在浏览器中阅读和收听《明日方舟》�
 
 在线阅读**无需安装**，直接打开 [主站地址](https://luoul-123.github.io/voice-of-terra-for-arknights/)。点右上角的目录选择故事；带“有声”标记的故事可选择已上线章节收听，其他章节可以阅读。存档只保存在当前浏览器；换设备或清除网站数据后不会自动同步。
 
-开发者可以从 [GitHub 下载源码 ZIP](https://github.com/luoul-123/voice-of-terra-for-arknights/archive/refs/heads/main.zip)。源码内保留语音模型和生成工具用于制作新音频。
+开发者可以从 [GitHub 下载源码 ZIP](https://github.com/luoul-123/voice-of-terra-for-arknights/archive/refs/heads/main.zip)。源码保留制作新音频的工具；凯尔希模型备份见 [Releases](https://github.com/luoul-123/voice-of-terra-for-arknights/releases/latest)。
 
 ## 架构和目录
 
