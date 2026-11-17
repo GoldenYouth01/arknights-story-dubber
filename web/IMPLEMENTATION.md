@@ -4,7 +4,7 @@
 
 读者只使用 [Voice of Terra 主网页](https://luoul-123.github.io/voice-of-terra-for-arknights/)。主仓库的 GitHub Pages 发布 React/Vite 静态网页、剧情目录和音频索引，不运行语音后端。剧情文本按需从 ArknightsGamedata 读取；立绘、CG 与音乐按需从公开素材源读取。
 
-凯尔希台词先在维护者电脑上用 GPT-SoVITS 合成，再转为 MP3。音频按剧情首次实装日期命名的独立 Pages 分站存放，例如《时间啊，向前！》使用 [vot-audio-20261101](https://github.com/luoul-123/vot-audio-20261101)。主线 0～4 章同日实装，共用 `vot-audio-20190430`；第 5、6、7 章分别使用 `vot-audio-20190709`、`vot-audio-20191224`、`vot-audio-20200501`。`pages/audio-manifest.json` 记录哪些台词已有配音，`pages/audio-sites.json` 把章节路径映射到音频分站。播放器读取映射后直接加载 MP3，浏览器地址仍停留在主站。以后增加分站时，在映射中配置章节或路径前缀即可；每个 Pages 站点不得超过 [1 GB](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)。
+凯尔希台词先在维护者电脑上用 GPT-SoVITS 合成，再转为 MP3。音频按剧情首次实装日期命名的独立 Pages 分站存放，例如《时间啊，向前！》使用 [vot-audio-20261101](https://github.com/luoul-123/vot-audio-20261101)。主线 0～4 章同日实装，共用 `vot-audio-20190430`；第 5、6、7、8 章分别使用 `vot-audio-20190709`、`vot-audio-20191224`、`vot-audio-20200501`、`vot-audio-20201101`。`pages/audio-manifest.json` 记录哪些台词已有配音，`pages/audio-sites.json` 把章节路径映射到音频分站。播放器读取映射后直接加载 MP3，浏览器地址仍停留在主站。以后增加分站时，在映射中配置章节或路径前缀即可；每个 Pages 站点不得超过 [1 GB](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)。
 
 ## 剧情目录与存档
 
@@ -27,6 +27,6 @@ npm run build:pages
 
 主站由 `.github/workflows/pages.yml` 在推送 `main` 后构建。音频分站从其仓库 `main` 分支发布静态文件。发布顺序是：**先推送音频分站并确认 MP3 可访问，再更新主站音频清单**，避免网页指向尚未上线的声音。
 
-逐节发布脚本是 `scripts/publish-audio-sections.py`。它读取 `work/pages-lines-故事组ID.json`，从 `work/分站名/` 的独立 Git 检出中续传。`scripts/generate-pages-audio.py` 跳过已经生成的 MP3，并在完成一节后清理临时 WAV 缓存。首次在新电脑维护时，要先恢复凯尔希模型、准备 GPT-SoVITS 环境、检出音频仓库；用 `python scripts/fetch-pages-story.py main_0` 等命令缓存剧情文本，再用 `node scripts/export-pages-lines.mjs main_0` 导出台词清单。主线 0～7 章的分站配置由 `node scripts/configure-main-audio.mjs` 生成。读者无需这些文件。
+逐节发布脚本是 `scripts/publish-audio-sections.py`。它读取 `work/pages-lines-故事组ID.json`，从 `work/分站名/` 的独立 Git 检出中续传。`scripts/generate-pages-audio.py` 跳过已经生成的 MP3，并在完成一节后清理临时 WAV 缓存。首次在新电脑维护时，要先恢复凯尔希模型、准备 GPT-SoVITS 环境、检出音频仓库；用 `python scripts/fetch-pages-story.py main_8` 等命令缓存剧情文本，再用 `node scripts/export-pages-lines.mjs main_8` 导出台词清单。主线 0～8 章的分站配置由 `node scripts/configure-main-audio.mjs` 生成。读者无需这些文件。
 
 凯尔希模型的备份在主仓库 [Releases](https://github.com/luoul-123/voice-of-terra-for-arknights/releases/latest) 的 `voice-of-terra-kaltsit.zip`。模型、生成缓存、令牌和工作目录均不提交到主仓库。音色来源见 [凯尔希音色说明](docs/default-voices.md)，素材来源见 [媒体说明](docs/media-sources.md)。

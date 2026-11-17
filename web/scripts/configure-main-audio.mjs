@@ -14,6 +14,7 @@ const shards={
   main_5:'vot-audio-20190709',
   main_6:'vot-audio-20191224',
   main_7:'vot-audio-20200501',
+  main_8:'vot-audio-20201101',
 };
 
 for(const [groupId,shard] of Object.entries(shards)){
@@ -27,4 +28,4 @@ for(const [groupId,shard] of Object.entries(shards)){
   }
 }
 fs.writeFileSync(file,JSON.stringify(sites,null,2)+'\n');
-console.log(`Configured ${Object.keys(sites.chapters).length} chapter mappings for main 0–7`);
+console.log(`Configured ${Object.keys(sites.chapters).length} chapter mappings for main 0–8`);

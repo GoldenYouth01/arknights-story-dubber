@@ -1,5 +1,6 @@
 """Create a public GitHub Pages repository for a story's generated audio."""
 import argparse
+from datetime import date
 import json
 import re
 import subprocess
@@ -51,8 +52,9 @@ def main(group_id, repo):
     group = next((item for item in catalog if item['id'] == group_id), None)
     if not group:
         raise ValueError('Story group missing')
-    label = '主线 0～4 章' if repo == 'vot-audio-20190430' else (
-        f'主线 {group_id.split("_")[-1]} 章·{group["title"]}' if group_id.startswith('main_') else group['title'])
+    label = '主线第0～4章' if repo == 'vot-audio-20190430' else (
+        f'主线第{group_id.split("_")[-1]}章《{group["title"]}》' if group_id.startswith('main_')
+        else f'SideStory《{group["title"]}》')
     checkout = WEB / 'work' / repo
     token = credential()
     status, _ = request('GET', f'/repos/{OWNER}/{repo}', token)
@@ -67,15 +69,16 @@ def main(group_id, repo):
         if status != 404:
             raise RuntimeError('Remote audio shard repository already exists')
         request('POST', '/user/repos', token, {'name': repo, 'private': False,
-                                             'description': f'Voice of Terra · {label} 凯尔希配音分站',
+                                             'description': f'泰拉之声 | {label}音频分站',
                                              'has_issues': False, 'has_wiki': False})
         checkout.mkdir(parents=True)
         (checkout / '.nojekyll').touch()
         (checkout / 'README.md').write_text(
-            f'# Voice of Terra · {label}配音分站\n\n'
-            f'本仓库存放{label}的凯尔希音色 MP3，供[主网页]'
-            f'(https://luoul-123.github.io/voice-of-terra-for-arknights/)读取。\n'
-            f'音频为非官方同人合成内容；剧情和角色版权归原权利人所有。\n', encoding='utf-8')
+            f'# Voice of Terra · {repo}\n\n'
+            f'更新时间：{date.today().isoformat()}\n'
+            f'{label}剧情配音静态文件。阅读请前往[主站]'
+            f'(https://luoul-123.github.io/voice-of-terra-for-arknights/)。\n'
+            f'这是非官方同人项目，音频和角色内容归其相应权利人所有。\n', encoding='utf-8')
         git('init', '-b', 'main', cwd=checkout)
         git('remote', 'add', 'origin', f'https://github.com/{OWNER}/{repo}.git', cwd=checkout)
     author = subprocess.run(['git', 'log', '-1', '--format=%an%n%ae'], cwd=WEB.parent,

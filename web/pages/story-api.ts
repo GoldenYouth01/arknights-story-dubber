@@ -2,7 +2,7 @@ import catalog from "./catalog.json";
 import {parseStory} from "../lib/story.mjs";
 
 export const CATALOG=catalog;
-const LOCAL_MAIN_CHAPTERS=new Map(catalog.filter(group=>/^main_[0-7]$/.test(group.id))
+const LOCAL_MAIN_CHAPTERS=new Map(catalog.filter(group=>/^main_[0-8]$/.test(group.id))
   .flatMap(group=>group.chapters.map(chapter=>[chapter.id,group.id] as const)));
 const SOURCES=[
   "https://cdn.jsdelivr.net/gh/ArknightsAssets/ArknightsGamedata@master/cn/gamedata/story/",

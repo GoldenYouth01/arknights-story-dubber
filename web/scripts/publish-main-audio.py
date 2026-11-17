@@ -20,6 +20,7 @@ SHARDS = {
     'main_5': 'vot-audio-20190709',
     'main_6': 'vot-audio-20191224',
     'main_7': 'vot-audio-20200501',
+    'main_8': 'vot-audio-20201101',
 }
 
 
@@ -70,7 +71,7 @@ def main(through):
         lines_file = (WORK / f'pages-lines-{group_id}.json').resolve()
         if lines_file.parent == WORK:
             lines_file.unlink(missing_ok=True)
-        if group_id in ('main_4', 'main_5', 'main_6', 'main_7'):
+        if group_id in ('main_4', 'main_5', 'main_6', 'main_7', 'main_8'):
             clean_shard(shard_name)
         if group_id == through:
             break

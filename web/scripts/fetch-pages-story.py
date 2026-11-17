@@ -13,19 +13,22 @@ SOURCE = 'https://raw.githubusercontent.com/ArknightsAssets/ArknightsGamedata/ma
 def fetch(chapter, target):
     slug = chapter['id'].split('/')[-1]
     url = SOURCE + chapter['id'] + '.txt'
-    for attempt in range(3):
+    output = target / (slug + '.txt')
+    if output.is_file() and output.stat().st_size >= 30:
+        return slug, output.stat().st_size
+    for attempt in range(6):
         try:
             with urlopen(Request(url, headers={'User-Agent': 'VoiceOfTerra'}), timeout=25) as response:
                 text = response.read().decode('utf-8-sig')
             if len(text) < 30 or text.lstrip().startswith('<'):
                 raise ValueError('Invalid story text: ' + url)
             text = '\n'.join(line.rstrip() for line in text.splitlines()) + '\n'
-            (target / (slug + '.txt')).write_text(text, encoding='utf-8')
+            output.write_text(text, encoding='utf-8')
             return slug, len(text)
         except Exception:
-            if attempt == 2:
+            if attempt == 5:
                 raise
-            time.sleep(2 * (attempt + 1))
+            time.sleep(5 * (attempt + 1))
 
 
 def main(group_id):
@@ -38,7 +41,7 @@ def main(group_id):
         raise ValueError('Unexpected chapter path')
     target = WEB / 'pages/public/story' / group_id
     target.mkdir(parents=True, exist_ok=True)
-    with ThreadPoolExecutor(max_workers=4) as pool:
+    with ThreadPoolExecutor(max_workers=2) as pool:
         tasks = [pool.submit(fetch, chapter, target) for chapter in group['chapters']]
         results = [task.result() for task in as_completed(tasks)]
     print(f'{group["title"]}: {len(results)} source files, {sum(size for _, size in results)} characters')
