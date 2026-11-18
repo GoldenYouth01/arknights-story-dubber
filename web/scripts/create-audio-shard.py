@@ -6,7 +6,7 @@ import re
 import subprocess
 from pathlib import Path
 from urllib.error import HTTPError
-from urllib.request import Request, urlopen
+from urllib.request import Request, getproxies, urlopen
 
 WEB = Path(__file__).resolve().parents[1]
 OWNER = 'luoul-123'
@@ -89,7 +89,9 @@ def main(group_id, repo):
     if subprocess.run(['git', 'rev-parse', '--verify', 'HEAD'], cwd=checkout,
                       capture_output=True).returncode:
         git('commit', '-m', f'Initialize {group["title"]} audio Pages shard', cwd=checkout)
-    git('-c', 'http.version=HTTP/1.1', '-c', 'http.proxy=http://127.0.0.1:7897',
+    proxy = getproxies().get('https')
+    git('-c', 'http.version=HTTP/1.1',
+        *(['-c', 'http.proxy=' + proxy] if proxy else []),
         'push', '-u', 'origin', 'main', cwd=checkout)
     pages_status, _ = request('GET', f'/repos/{OWNER}/{repo}/pages', token)
     if pages_status == 404:
