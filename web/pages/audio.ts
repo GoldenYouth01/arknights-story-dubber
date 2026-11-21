@@ -1,6 +1,7 @@
 import {DialogueAudio} from "../lib/audio.mjs";
 import manifest from "./audio-manifest.json";
 import audioSites from "./audio-sites.json";
+import audioRevisions from "./audio-revisions.json";
 
 const available=manifest as Record<string,number[]>;
 const sites=audioSites as {chapters:Record<string,string>;prefixes:Record<string,string>};
@@ -14,7 +15,8 @@ export function staticAudioPath(stepId:string){
   if(!indices?.includes(Number(match[2])))return null;
   const prefix=Object.keys(sites.prefixes).filter(key=>chapterId.startsWith(key)).sort((a,b)=>b.length-a.length)[0];
   const base=sites.chapters[chapterId]??(prefix?sites.prefixes[prefix]:undefined)??import.meta.env.BASE_URL;
-  return base.replace(/\/?$/,"/")+"audio/"+slug+"/"+match[2]+".mp3";
+  const revision=(audioRevisions as Record<string,string>)[stepId];
+  return base.replace(/\/?$/,"/")+"audio/"+slug+"/"+match[2]+".mp3"+(revision?"?v="+encodeURIComponent(revision):"");
 }
 export function isVoicedChapter(id:string){
   const slug=id.split("/").pop()||"";
