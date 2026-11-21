@@ -53,7 +53,7 @@ export function nextIndex(steps,from,choice){
  for(let i=from+1;i<steps.length;i++)if(!steps[i].route || steps[i].route.includes(choice))return i;
  return -1;
 }
-export const CATEGORIES=[{id:"main",label:"主线"},{id:"side",label:"SideStory"},{id:"collection",label:"故事集"},{id:"personal",label:"个人密录"},{id:"other",label:"其他"}];
+export const CATEGORIES=[{id:"main",label:"主线"},{id:"side",label:"SideStory"},{id:"collection",label:"故事集"},{id:"personal",label:"干员密录"},{id:"other",label:"其他"}];
 // Early entries use archive-launch timestamps; first-release corrections are sourced in docs/catalog-sources.md.
 const EARLY_MAIN={main_0:"2019-04-30T10:00:00+08:00",main_1:"2019-04-30T10:00:00+08:00",main_2:"2019-04-30T10:00:00+08:00",main_3:"2019-04-30T10:00:00+08:00",main_4:"2019-04-30T10:00:00+08:00",main_5:"2019-07-09T16:00:00+08:00",main_6:"2019-12-24T16:00:00+08:00",main_7:"2020-05-01T16:00:00+08:00"};
 export function releaseDate(timestamp){return timestamp>0?new Date(timestamp*1000+8*3600000).toISOString().slice(0,10):"日期待补";}
@@ -69,7 +69,7 @@ export function catalogFrom(raw,metadata={}){
 export function timelineFrom(groups){return groups.flatMap(g=>g.chapters.map(c=>({...c,groupSort:g.groupSort}))).sort((a,b)=>(a.releasedAt||Infinity)-(b.releasedAt||Infinity)||a.groupSort-b.groupSort||a.sort-b.sort);}
 
 export function resolveScene(steps,index,decisions={}){
- let state={background:null,cg:null,actors:[],focus:0,music:null,musicVolume:1},choice=null;
+ let state={background:null,cg:null,actors:[],focus:0,music:null,musicStopped:false,musicVolume:1},choice=null;
  const slots=new Map();
  for(let i=0;i<=index;i++){
   const step=steps[i];if(!step)break;
@@ -95,8 +95,8 @@ export function resolveScene(steps,index,decisions={}){
     const focus=normalizeSlot(a.focus);
     state={...state,actors,focus:focus==='all'?-1:focus?actors.findIndex(actor=>actor.slot===focus):state.focus};
    }
-   if(name==='playmusic')state={...state,music:{key:a.key||a.intro||'',intro:a.intro||null,event:step.id+':'+i},musicVolume:Number(a.volume??1)};
-   if(name==='stopmusic')state={...state,music:null};
+   if(name==='playmusic')state={...state,music:{key:a.key||a.intro||'',intro:a.intro||null,event:step.id+':'+i},musicStopped:false,musicVolume:Number(a.volume??1)};
+   if(name==='stopmusic')state={...state,music:null,musicStopped:true};
    if(name==='musicvolume')state={...state,musicVolume:Number(a.volume??1)};
   }
   if(step.type==='choice'&&i<index&&(!step.route||step.route.includes(choice)))choice=decisions[step.id]??choice;

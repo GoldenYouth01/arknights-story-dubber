@@ -3,6 +3,8 @@ import {Pause,Play,ExternalLink,ChevronUp,Gauge} from "lucide-react";
 
 type DesktopPetProps={
   chapter:string;
+  speaker:string;
+  dialogue:string;
   status:string;
   rate:number;
   onToggle:()=>void;
@@ -28,6 +30,7 @@ const styles=`
   .pet-stage picture{z-index:1;display:flex;align-items:flex-end;justify-content:center;width:100%;height:calc(100% - 22px);pointer-events:none}
   .pet-figure{display:block;width:96%;height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 10px 9px #395a4844)}
   .pet-dock{position:relative;z-index:3;display:grid;gap:4px;padding:7px;background:#f7fbf4ee;border-top:1px solid #fff;box-shadow:0 -8px 24px #638b7240}
+  .pet-transcript{display:grid;gap:3px;min-width:0;font-size:10px;color:#365f4c}.pet-transcript strong{font-size:10px}.pet-scroll{overflow:hidden;white-space:nowrap;color:#587b6d}.pet-scroll span{display:inline-block;min-width:100%;padding-left:100%;animation:pet-line-scroll 12s linear infinite}@keyframes pet-line-scroll{to{transform:translateX(-100%)}}
   .pet-actions{display:grid;grid-template-columns:56px 56px 32px;align-items:center;justify-content:center;gap:6px}
   .pet-actions button{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:3px;width:100%;height:32px;min-width:0;min-height:32px;padding:0 3px;border:1px solid #b9d0be;border-radius:999px;background:#e9f1e8;color:#365f4c;transition:transform .15s,background .15s}
   .pet-actions button:hover{background:#dbead9;transform:translateY(-1px)}
@@ -51,7 +54,7 @@ function KaltsitChibi(){
   </picture>;
 }
 
-export default function DesktopPet({chapter,status,rate,onToggle,onRateChange,onReturn}:DesktopPetProps){
+export default function DesktopPet({chapter,speaker,dialogue,status,rate,onToggle,onRateChange,onReturn}:DesktopPetProps){
   const [speedOpen,setSpeedOpen]=useState(false);
   const paused=status==="paused";
   const canToggle=!["choice","ended","silent"].includes(status);
@@ -63,6 +66,7 @@ export default function DesktopPet({chapter,status,rate,onToggle,onRateChange,on
         <KaltsitChibi/>
       </div>
       <div className="pet-dock">
+        <div className="pet-transcript"><strong>{speaker}</strong><div className="pet-scroll"><span key={dialogue}>{dialogue||"等待下一句台词"}</span></div></div>
         {speedOpen&&<div className="pet-speed-options" role="radiogroup" aria-label="播放速度">
           {[.7,.8,.9,1,1.1,1.2,1.3,1.4,1.5].map(option=><button key={option} type="button" role="radio" aria-checked={Math.abs(rate-option)<.05} onClick={()=>{onRateChange(option);setSpeedOpen(false);}}>{option.toFixed(1)}×</button>)}
         </div>}

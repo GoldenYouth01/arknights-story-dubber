@@ -26,7 +26,7 @@ try{
  await until('Boolean(document.querySelector(".entry-actions .primary"))');
  await evaluate('localStorage.removeItem("terra-manual-save");localStorage.removeItem("zhousheng-progress");localStorage.setItem("zhousheng-settings",JSON.stringify({typing:false,volume:0,musicVolume:0}));location.reload()');
  await until('Boolean(document.querySelector(".entry-actions .primary"))');
- await evaluate('document.querySelector("button[aria-label=静音]").click();document.querySelector(".entry-actions .primary").click()');
+ await evaluate('document.querySelector("button[aria-label=关闭配音]").click();document.querySelector(".entry-actions .primary").click()');
  await until('Boolean(document.querySelector(".line-number"))');
  assert.ok(await evaluate('!document.body.textContent.includes("EPISODE 00")&&!document.body.textContent.includes("非官方同人剧场")&&!document.querySelector(".voice-indicator")&&!document.querySelector(".voice-label")&&!document.body.textContent.includes("点击继续")'));
  assert.equal(await evaluate('document.querySelector("a[aria-label^=GitHub]").href'),'https://github.com/luoul-123/voice-of-terra-for-arknights');

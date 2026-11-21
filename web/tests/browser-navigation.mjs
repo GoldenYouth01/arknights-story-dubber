@@ -47,10 +47,10 @@ try{
    await evaluate('document.querySelector("button[aria-label=关闭面板]").click()');
  }
  await evaluate('[...document.querySelectorAll(".control-left button")].find(b=>b.textContent.includes("回顾")).click()');await pause(150);assert.equal((await snapshot()).paused,false);console.log("HISTORY_CONTINUES",true);
- await evaluate('document.querySelector("button[aria-label=关闭面板]").click();document.querySelector("button[aria-label=章节目录]").click()');
+ await evaluate('document.querySelector("button[aria-label=关闭面板]").click();document.querySelector("button[aria-label=剧情档案]").click()');
  await until('document.querySelectorAll(".archive-categories button").length>4');
  const archive=await evaluate('({categories:document.querySelector(".archive-categories").innerText,groups:document.querySelectorAll(".catalog details").length,title:document.title})');console.log("ARCHIVE",JSON.stringify(archive));assert.ok(archive.title.includes("泰拉之声"));assert.ok(archive.groups>100);
- await evaluate('[...document.querySelectorAll(".archive-categories button")].find(b=>b.textContent.includes("个人密录")).click()');
+ await evaluate('[...document.querySelectorAll(".archive-categories button")].find(b=>b.textContent.includes("干员密录")).click()');
  assert.ok(await evaluate('document.querySelector(".catalog summary").textContent.includes("12F")'));await screenshot("archive-personal");
  await evaluate('document.querySelector(".archive-categories button").click();document.querySelectorAll(".archive-views button")[1].click()');
  const releases=await evaluate('[...document.querySelectorAll(".timeline-collection")].map(b=>Number(b.dataset.release))');assert.equal(releases.length,80);assert.deepEqual(releases,[...releases].sort((a,b)=>a-b));assert.equal(await evaluate('document.querySelector(".timeline-date").textContent'),"2019-04-30");assert.equal(await evaluate('document.querySelector(".timeline-collection").open'),false);assert.ok(await evaluate('document.querySelector(".timeline-collection summary").textContent.includes("第 0 章")'));await evaluate('document.querySelector(".timeline-collection summary").click()');assert.equal(await evaluate('document.querySelector(".timeline-collection").open'),true);await screenshot("archive-timeline");
@@ -61,11 +61,11 @@ try{
  await evaluate('document.querySelector(".entry-actions .text-button").click()');await until('Boolean(document.querySelector(".dialogue-shell"))');
  await evaluate('document.querySelector(".listen-toggle").click()');await nextLine();await until('Boolean(document.querySelector(".chapter-complete"))');
  const endText=await evaluate('document.querySelector(".chapter-complete").innerText');assert.ok(endText.includes("0-2"));await pause(1200);assert.equal(await evaluate('Boolean(document.querySelector(".chapter-complete"))'),true);console.log("NEXT_CONFIRMATION",endText);await screenshot("next-section-confirmation");
- await evaluate('document.querySelector("button[aria-label=章节目录]").click()');assert.ok(await evaluate('Boolean(document.querySelector("button[aria-label=确认进入下一段]"))'));
+ await evaluate('document.querySelector("button[aria-label=剧情档案]").click()');assert.ok(await evaluate('Boolean(document.querySelector("button[aria-label=确认进入下一段]"))'));
  await evaluate('document.querySelector("button[aria-label=确认进入下一段]").click()');await until('Boolean(document.querySelector(".dialogue-shell")) && document.querySelector(".chapter-heading").textContent.includes("0-2")');console.log("NEXT_SECTION_LOADED",await evaluate('document.querySelector(".chapter-heading").textContent'));
  await evaluate('document.querySelector(".auto-button").click()');
  await send("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true});await pause(400);await screenshot("mobile-terra-voice");assert.equal(await evaluate('document.documentElement.scrollWidth>innerWidth'),false);
- await evaluate('document.querySelector("button[aria-label=章节目录]").click()');await pause(200);await screenshot("mobile-archive");assert.equal(await evaluate('document.documentElement.scrollWidth>innerWidth'),false);
+ await evaluate('document.querySelector("button[aria-label=剧情档案]").click()');await pause(200);await screenshot("mobile-archive");assert.equal(await evaluate('document.documentElement.scrollWidth>innerWidth'),false);
  console.log("ERRORS",JSON.stringify(errors));assert.equal(errors.length,0);
  await send("Browser.close").catch(()=>{});
 }finally{socket?.close();child.kill();}

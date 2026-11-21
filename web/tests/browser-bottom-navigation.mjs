@@ -25,12 +25,12 @@ try{
  await send('Emulation.setDeviceMetricsOverride',{width:1148,height:834,deviceScaleFactor:1,mobile:false});
  await send('Page.navigate',{url:'http://127.0.0.1:5173/signin-with-chatgpt?return_to=/'});await until('Boolean(document.querySelector(".entry-actions .primary"))');
  await evaluate('localStorage.removeItem("terra-manual-save");localStorage.setItem("zhousheng-progress",JSON.stringify({chapter:{id:"obt/main/level_main_00-01_beg",title:"坍塌",code:"0-1",tag:"行动前"},index:3,choice:null,decisions:{}}));location.reload()');await until('Boolean(document.querySelector(".entry-actions .primary"))');
- await evaluate('document.querySelector("button[aria-label=静音]").click();document.querySelector(".entry-actions .primary").click()');await until('Boolean(document.querySelector(".line-number"))');
+ await evaluate('document.querySelector("button[aria-label=关闭配音]").click();document.querySelector(".entry-actions .primary").click()');await until('Boolean(document.querySelector(".line-number"))');
  assert.equal(parseInt(await evaluate('document.querySelector(".line-number").textContent')),4);
- await evaluate('document.querySelector("button[aria-label=上一句]").click()');await pause(100);assert.equal(parseInt(await evaluate('document.querySelector(".line-number").textContent')),3);
- assert.deepEqual(await evaluate('[...document.querySelectorAll(".chapter-nav-button small")].map(e=>e.textContent)'),['上一句','下一章']);
+ assert.equal(await evaluate('document.querySelector("button[aria-label=上一章]").disabled'),true);
+ assert.deepEqual(await evaluate('[...document.querySelectorAll(".chapter-nav-button small")].map(e=>e.textContent)'),['上一章','下一章']);
  await evaluate('document.querySelector("button[aria-label=下一章]").click()');await until('document.querySelector(".chapter-heading").textContent.includes("行动后")&&Boolean(document.querySelector(".dialogue-shell"))');assert.ok(await evaluate('document.querySelector(".chapter-heading").textContent.includes("0-1")'));
- assert.equal(await evaluate('document.querySelector("button[aria-label=上一句]").disabled'),true);
+ assert.equal(await evaluate('document.querySelector("button[aria-label=上一章]").disabled'),false);
  await evaluate('document.querySelector("button[aria-label=下一章]").click()');await until('document.querySelector(".chapter-heading").textContent.includes("0-2")&&Boolean(document.querySelector(".dialogue-shell"))');console.log('BOTTOM_NEXT_ORDER','0-1 行动前 → 0-1 行动后 → 0-2 行动前');
  for(const width of [1148,640,390]){await send('Emulation.setDeviceMetricsOverride',{width,height:834,deviceScaleFactor:1,mobile:width<600});await pause(250);const layout=await evaluate('(()=>{const l=document.querySelector(".control-left").getBoundingClientRect(),c=document.querySelector(".control-center").getBoundingClientRect(),r=document.querySelector(".control-right").getBoundingClientRect();return {left:l.right,centerLeft:c.left,centerRight:c.right,right:r.left,overflow:document.documentElement.scrollWidth>innerWidth}})()');console.log('BOTTOM_LAYOUT',width,layout);assert.equal(layout.overflow,false);assert.ok(layout.left<=layout.centerLeft&&layout.centerRight<=layout.right,'Bottom controls overlap at '+width);await screenshot('bottom-navigation-'+width);}
  assert.equal(errors.length,0);await send('Browser.close').catch(()=>{});

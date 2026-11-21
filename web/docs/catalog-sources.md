@@ -16,3 +16,9 @@
   - 9 章：2021-09-17：https://ak.hypergryph.com/news/2021099183.html
 
 早期主线显示的是公开运营首发日期，不包含此前测试服开放时间。活动中的章节默认归于所属活动首发日期；同活动分周开放的精确关卡日期尚未逐项补全。
+
+## 剧情时间线与封面
+
+剧情时间线使用 [Furnaceside Fables 的泰拉纪年表](https://fables.lone-trail.com/timeline/)作为玩家考据参考，映射记录放在 `pages/story-chronology.ts`。时间线按故事主要发生时期排列；含大段回忆的剧情无法精确到每一小节。没有可靠年代的故事显示在“年代未详”，联动剧情单独列出。这里的泰拉纪年并非官方发布的完整年表。
+
+主线与 SideStory 封面读取 [ArknightsAssets2](https://github.com/ArknightsAssets/ArknightsAssets2) 中的 `homebanners/zone`、`storyreview/hubs/activity` 与少量剧情 CG。图片加载失败时使用文字封面。素材版权仍归鹰角网络及相关权利人所有。
