@@ -23,7 +23,7 @@ export default function StoryArchive({groups,currentId,onSelect,onRetry,focusGro
   return (order==="newest"?-1:1)*(a.releasedAt-b.releasedAt)||a.groupSort-b.groupSort;
  }),[groups,category,q,year,storyView,order]);
  const active=groups.find((g:any)=>g.id===selected);
- const buckets=useMemo(()=>{const result:{label:string;items:any[]}[]=[];for(const g of entries){const label=category==="all"?(storyView?storyEra(g):releaseDate(g.releasedAt)):"";let bucket=result[result.length-1];if(!bucket||bucket.label!==label){bucket={label,items:[]};result.push(bucket);}bucket.items.push(g);}return result;},[entries,category,storyView]);
+ const buckets=useMemo(()=>{const result:{label:string;items:any[]}[]=[];for(const g of entries){const label=category==="all"?(storyView?storyEra(g):g.releasedAt?releaseDate(g.releasedAt).slice(0,4):"日期待补"):"";let bucket=result[result.length-1];if(!bucket||bucket.label!==label){bucket={label,items:[]};result.push(bucket);}bucket.items.push(g);}return result;},[entries,category,storyView]);
  useEffect(()=>{const frame=listRef.current;if(!frame)return;const raf=requestAnimationFrame(()=>{
   if(selected){const row=frame.querySelector<HTMLElement>(".chapter-row.selected");frame.scrollTop=row?row.offsetTop-frame.offsetTop-frame.clientHeight/2:0;}
   else frame.scrollTop=savedScroll.current;
@@ -47,7 +47,7 @@ export default function StoryArchive({groups,currentId,onSelect,onRetry,focusGro
     {active?active.chapters.map((c:any)=><button className={"chapter-row "+(c.id===currentId?"selected":"")} key={c.id} aria-current={c.id===currentId?"true":undefined} onClick={()=>onSelect(c)}><span>{c.code||"ST"}</span><div><b>{c.title}</b><small>{c.tag}</small></div><ChevronRight size={16}/></button>):buckets.map((bucket,i)=><section className="archive-bucket" key={bucket.label+i}>
      {bucket.label&&<h3 className="timeline-date">{bucket.label}</h3>}
      <div className="archive-grid">{bucket.items.map((g:any)=>{
-      const card=["main","side"].includes(g.category),current=g.id===focusGroupId||g.chapters.some((c:any)=>c.id===currentId);
+      const card=["main","side"].includes(category),current=g.id===focusGroupId||g.chapters.some((c:any)=>c.id===currentId);
       return <button key={g.id} className={card?"archive-card":"archive-group-row"} data-current={current?"true":undefined} onClick={()=>open(g)}>
        {card&&<div className="archive-cover"><img src={coverFor(g)} alt="" loading="lazy" onError={e=>{e.currentTarget.style.display="none";}}/><span>VOICE OF TERRA</span><b>{g.title}</b></div>}
        <div className="archive-card-meta"><b>{g.operator?g.operator+" · ":""}{g.title}</b><small>{g.date||"日期待补"}</small>{badge(g)}</div>{!card&&<ChevronRight size={16}/>}
