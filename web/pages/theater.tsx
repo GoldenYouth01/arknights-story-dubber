@@ -114,7 +114,7 @@ export default function Theater(){
   const timer=setTimeout(()=>move(),voiceStatus==="ended"?700:Math.max(1600,text.length*110));return()=>clearTimeout(timer);
  },[listening,auto,started,complete,drawer,ended,step,voiceStatus,text,move]);
  useEffect(()=>{const listener=(e:KeyboardEvent)=>{if(e.key==="Escape"){setDrawer(null);return;}const target=e.target as HTMLElement;if(target.closest("input,textarea,select,[contenteditable=true]"))return;if(drawer)return;if(e.key==="Enter"&&target.closest("button,a"))return;if(e.key===" "||e.key==="Enter"||e.key==="ArrowRight"){e.preventDefault();if(e.key===" "){(document.activeElement as HTMLElement)?.blur?.();if(e.repeat)return;}advanceRef.current();}if(e.key.toLowerCase()==="a")setAuto(v=>!v);if(e.key.toLowerCase()==="h")setDrawer("history");};window.addEventListener("keydown",listener);return()=>window.removeEventListener("keydown",listener);},[drawer]);
- useEffect(()=>{if(mode==="scroll"&&scrollReader.current)scrollReader.current.scrollTop=scrollReader.current.scrollHeight;},[index,mode]);
+ useEffect(()=>{if(mode==="scroll"&&scrollReader.current)scrollReader.current.scrollTop=scrollReader.current.scrollHeight;},[index,mode,started,loading]);
  useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(""),2500);return()=>clearTimeout(t);},[toast]);
  const previousChapter=(()=>{const group=catalog.find(g=>g.chapters.some(c=>c.id===chapter.id));if(!group)return null;const i=group.chapters.findIndex(c=>c.id===chapter.id);return i>0?group.chapters[i-1]:null;})();
  backRef.current=()=>{if(previousChapter)void loadChapter(previousChapter).then(()=>setStarted(true));};
