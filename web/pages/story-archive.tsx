@@ -6,8 +6,8 @@ import {isVoicedChapter} from "./audio";
 import {STORY_CHRONOLOGY} from "./story-chronology";
 const archiveCategories=CATEGORIES.filter(category=>category.id!=="other");
 const ASSET_ROOT="https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/";
-const specialCovers:Record<string,string>={main_15:"avg/images/cg_smoke.png",main_16:"avg/images/66_i02.png",main_17:"avg/images/73_i01_1.png"};
-function coverFor(g:any){return ASSET_ROOT+(specialCovers[g.id]||(g.category==="main"?`arts/ui/homebanners/zone/${g.id}.png`:`arts/ui/storyreview/hubs/activity/storyentrypic_${g.id==="1stact"?"act1d0":g.id}.png`));}
+const mainCoverIds:Record<string,string>={main_15:"permanent_main_1_zone1",main_16:"permanent_main_2_zone1",main_17:"permanent_main_3_zone1"};
+function coverFor(g:any){return ASSET_ROOT+(g.category==="main"?`arts/ui/stage/%5Buc%5Dhomeentry/${mainCoverIds[g.id]||g.id}.png`:`arts/ui/storyreview/hubs/activity/storyentrypic_${g.id==="1stact"?"act1d0":g.id}.png`);}
 function storyEra(g:any){return STORY_CHRONOLOGY[g.id]?.era||"年代未详";}
 function storyRank(g:any){const record=STORY_CHRONOLOGY[g.id];return record?.era.startsWith("泰拉历")?record.order:record?.era==="联动剧情"?100000+record.order:200000+(g.releasedAt||0);}
 export default function StoryArchive({groups,currentId,onSelect,onRetry,focusGroupId}:any){
@@ -49,7 +49,7 @@ export default function StoryArchive({groups,currentId,onSelect,onRetry,focusGro
      <div className="archive-grid">{bucket.items.map((g:any)=>{
       const card=["main","side"].includes(category),current=g.id===focusGroupId||g.chapters.some((c:any)=>c.id===currentId);
       return <button key={g.id} className={card?"archive-card":"archive-group-row"} data-current={current?"true":undefined} onClick={()=>open(g)}>
-       {card&&<div className="archive-cover"><img src={coverFor(g)} alt="" loading="lazy" onError={e=>{e.currentTarget.style.display="none";}}/><span>VOICE OF TERRA</span><b>{g.title}</b></div>}
+       {card&&<div className={`archive-cover archive-cover-${g.category}`}><img src={coverFor(g)} alt="" loading="lazy" onError={e=>{e.currentTarget.style.display="none";e.currentTarget.parentElement?.classList.add("cover-unavailable");}}/><b className="archive-cover-fallback">{g.title}</b></div>}
        <div className="archive-card-meta"><b>{g.operator?g.operator+" · ":""}{g.title}</b><small>{g.date||"日期待补"}</small>{badge(g)}</div>{!card&&<ChevronRight size={16}/>}
       </button>;
      })}</div>

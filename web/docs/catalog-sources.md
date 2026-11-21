@@ -21,4 +21,4 @@
 
 剧情时间线使用 [Furnaceside Fables 的泰拉纪年表](https://fables.lone-trail.com/timeline/)作为玩家考据参考，映射记录放在 `pages/story-chronology.ts`。时间线按故事主要发生时期排列；含大段回忆的剧情无法精确到每一小节。没有可靠年代的故事显示在“年代未详”，联动剧情单独列出。这里的泰拉纪年并非官方发布的完整年表。
 
-主线与 SideStory 封面读取 [ArknightsAssets2](https://github.com/ArknightsAssets/ArknightsAssets2) 中的 `homebanners/zone`、`storyreview/hubs/activity` 与少量剧情 CG。图片加载失败时使用文字封面。素材版权仍归鹰角网络及相关权利人所有。
+主线封面读取 [ArknightsAssets2 的游戏章节入口素材](https://github.com/ArknightsAssets/ArknightsAssets2/tree/cn/assets/dyn/arts/ui/stage/%5Buc%5Dhomeentry)，实际资源目录为 `arts/ui/stage/[uc]homeentry`：第 0–14 章使用 `main_N.png`，第 15–17 章使用 `permanent_main_1_zone1.png` 至 `permanent_main_3_zone1.png`。SideStory 使用同仓库 `arts/ui/storyreview/hubs/activity` 中的剧情回顾封面。主线按横版、SideStory 按竖版展示，完整保留原图，不裁切或叠加标题；图片加载失败时使用文字封面。素材版权仍归鹰角网络及相关权利人所有。
