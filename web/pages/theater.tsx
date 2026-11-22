@@ -21,7 +21,8 @@ const BG=MEDIA_ROOT+"backgrounds/bg_cher_1.png";
 function IconButton({label,onClick,active=false,children}:any){return <button className={"icon-button "+(active?"active":"")} title={label} aria-label={label} onClick={onClick}>{children}</button>;}
 const portraitBounds=new Map<string,{left:number;right:number;top:number;bottom:number}>();
 function Actor({actor,focus,total}:any){
- const [failed,setFailed]=useState(false),[placement,setPlacement]=useState({scale:1,offset:0});
+ const [failed,setFailed]=useState(false),[placement,setPlacement]=useState({scale:1,offset:0,horizontal:0});
+ const slot=total===1?"m":actor.slot||"m";
  const imgRef=useRef<HTMLImageElement>(null);
  useEffect(()=>setFailed(false),[actor.key]);
  const fit=useCallback((img:HTMLImageElement,bounds:{left:number;right:number;top:number;bottom:number})=>{
@@ -30,7 +31,7 @@ function Actor({actor,focus,total}:any){
   const fittedHeight=Math.min(height,width*nh/nw),fittedWidth=fittedHeight*nw/nh;
   const visibleHeight=fittedHeight*(bounds.bottom-bounds.top),visibleWidth=fittedWidth*(bounds.right-bounds.left);
   const scale=Math.max(.65,Math.min(2.5,.82*height/Math.max(visibleHeight,1),1.15*width/Math.max(visibleWidth,1)));
-  setPlacement({scale,offset:scale*fittedHeight*(1-bounds.bottom)});
+  setPlacement({scale,offset:scale*fittedHeight*(1-bounds.bottom),horizontal:scale*fittedWidth*(.5-(bounds.left+bounds.right)/2)});
  },[]);
  const onLoad=useCallback((event:React.SyntheticEvent<HTMLImageElement>)=>{
   const img=event.currentTarget;
@@ -48,9 +49,9 @@ function Actor({actor,focus,total}:any){
   }
   fit(img,bounds);
  },[actor.url,fit]);
- useEffect(()=>{const onResize=()=>{const img=imgRef.current,bounds=portraitBounds.get(actor.url);if(img&&bounds)fit(img,bounds);};window.addEventListener("resize",onResize);return()=>window.removeEventListener("resize",onResize);},[actor.url,fit]);
+ useEffect(()=>{const onResize=()=>{const img=imgRef.current,bounds=portraitBounds.get(actor.url);if(img&&bounds)fit(img,bounds);};onResize();window.addEventListener("resize",onResize);return()=>window.removeEventListener("resize",onResize);},[actor.url,fit,total]);
  if(failed)return null;
- return <img ref={imgRef} alt="" crossOrigin="anonymous" className={"actor "+(focus?"focused":"dimmed")+" "+(total===1?"solo":"")+" actor-slot-"+(actor.slot||"m")} style={{opacity:actor.opacity,transform:`translateY(${placement.offset}px) scale(${placement.scale})`,transformOrigin:"center bottom"}} src={actor.url} onLoad={onLoad} onError={()=>setFailed(true)}/>;
+ return <img ref={imgRef} alt="" crossOrigin="anonymous" className={"actor "+(focus?"focused":"dimmed")+" "+(total===1?"solo":"")+" actor-slot-"+slot} style={{opacity:actor.opacity,transform:`${slot==="m"?`translateX(calc(-50% + ${placement.horizontal}px)) `:""}translateY(${placement.offset}px) scale(${placement.scale})`,transformOrigin:"center bottom"}} src={actor.url} onLoad={onLoad} onError={()=>setFailed(true)}/>;
 }
 export default function Theater(){
  const [chapter,setChapter]=useState<Chapter>(FIRST),[steps,setSteps]=useState<Step[]>([]),[index,setIndex]=useState(0),[choice,setChoice]=useState<string|null>(null),[decisions,setDecisions]=useState<Record<string,string>>({});
